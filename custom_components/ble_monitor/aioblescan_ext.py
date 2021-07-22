@@ -1845,7 +1845,10 @@ class BLEScanRequester(asyncio.Protocol):
     def data_received(self, packet):
         if self._uninitialized:
             ev = HCI_Event()
-            extra_data = ev.decode(packet)
+            try:
+                extra_data = ev.decode(packet)
+            except:
+                _LOGGER.error("failing data: %s", packet.hex())
             if ev.payload[0].val == b"\x0e":
                 cc = ev.retrieve("Command Completed")[0]
                 cmd = cc.retrieve(OgfOcf)[0]
